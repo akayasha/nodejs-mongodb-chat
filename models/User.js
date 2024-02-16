@@ -4,13 +4,13 @@ const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    displayName: String,
-    gender: String,
-    dateOfBirth: Date,
-    weight: Number,
-    height: Number,
-    horoscope: String,
-    zodiac: String,
+    displayName: { type: String, required: false},
+    gender: { type: String, required: false},
+    dateOfBirth:{ type: Date, required: false},
+    weight: { type: Number, required: false},
+    height: { type: Number, required: false},
+    horoscope: { type: String, required: false},
+    zodiac: { type: String, required: false},
     interests: [{ type: String }]
 });
 
@@ -36,7 +36,7 @@ userSchema.pre('save', function(next) {
 
 // Function to generate horoscope based on month and day
 function generateHoroscope(month, day) {
-    // Your logic to generate horoscope based on month and day
+    // Determine horoscope based on month and day
     if ((month == 1 && day >= 20) || (month == 2 && day <= 18)) {
         return 'Aquarius';
     } else if ((month == 2 && day >= 19) || (month == 3 && day <= 20)) {
@@ -60,18 +60,21 @@ function generateHoroscope(month, day) {
     } else if ((month == 11 && day >= 22) || (month == 12 && day <= 21)) {
         return 'Sagittarius';
     } else {
-        return 'Capricorn';
+        return 'Capricorn'; // Return default value for invalid input
     }
 }
 
-
 // Function to generate zodiac based on year of birth
 function generateZodiac(year) {
-    // Logic to generate zodiac based on year of birth
-    const zodiacSigns = ['Rat', 'Ox', 'Tiger', 'Rabbit', 'Dragon', 'Snake', 'Horse', 'Goat', 'Monkey', 'Rooster', 'Dog', 'Pig'];
-    const index = (year - 4) % 12;
-    return zodiacSigns[index];
+    const zodiacSigns = ['Monkey', 'Rooster', 'Dog', 'Pig', 'Rat', 'Ox', 'Tiger', 'Rabbit', 'Dragon', 'Snake', 'Horse', 'Goat'];
+    const index = (year - 1900) % 12; // Chinese zodiac cycle starts from 1900
+    if (index >= 0 && index < zodiacSigns.length) {
+        return zodiacSigns[index];
+    } else {
+        return 'Unknown'; // Return default value for invalid input
+    }
 }
+
 
 
 const User = mongoose.model('User', userSchema);

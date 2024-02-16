@@ -33,10 +33,13 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { identity, password } = req.body;
 
-    // Check if user exists
-    const user = await User.findOne({ email });
+    // Check if user exists by email or username
+    const user = await User.findOne({
+      $or: [{ email: identity }, { username: identity }]
+    });
+
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
@@ -63,3 +66,4 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
+

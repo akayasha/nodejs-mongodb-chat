@@ -68,3 +68,30 @@ exports.deleteInterests = async (userId) => {
         throw new Error('Server Error');
     }
 };
+
+
+// delete By Index
+exports.deleteInterestByIndex = async (userId, index) => {
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        // Periksa apakah indeks berada dalam rentang array
+        if (index < 0 || index >= user.interests.length) {
+            throw new Error('Invalid index');
+        }
+
+        // Hapus item dari array menggunakan splice
+        user.interests.splice(index, 1);
+        await user.save();
+
+        return 'Interest deleted successfully';
+    } catch (error) {
+        console.error(error);
+        throw new Error('Server Error');
+    }
+};
+
+

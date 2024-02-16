@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const interestController = require('../controllers/interestController');
+const authMiddleware = require('../middleware/authMiddleware');
+
+router.use(authMiddleware);
 
 // Add interests to a user
-router.post('/:userId/interests', async (req, res) => {
-    const { userId } = req.params;
+router.post('/interests', async (req, res) => {
     const { interests } = req.body;
+    const userId = req.user.id;
 
     try {
         const message = await interestController.addInterests(userId, interests);
@@ -17,8 +20,8 @@ router.post('/:userId/interests', async (req, res) => {
 });
 
 // Get interests of a user
-router.get('/:userId/interests', async (req, res) => {
-    const { userId } = req.params;
+router.get('/interests', async (req, res) => {
+    const userId = req.user.id;
 
     try {
         const interests = await interestController.getInterests(userId);
@@ -30,9 +33,9 @@ router.get('/:userId/interests', async (req, res) => {
 });
 
 // Update interests of a user
-router.put('/:userId/interests', async (req, res) => {
-    const { userId } = req.params;
+router.put('/interests', async (req, res) => {
     const { interests } = req.body;
+    const userId = req.user.id;
 
     try {
         const message = await interestController.updateInterests(userId, interests);
@@ -44,11 +47,25 @@ router.put('/:userId/interests', async (req, res) => {
 });
 
 // Delete interests of a user
-router.delete('/:userId/interests', async (req, res) => {
-    const { userId } = req.params;
+router.delete('/interests', async (req, res) => {
+    const userId = req.user.id;
 
     try {
         const message = await interestController.deleteInterests(userId);
+        res.status(200).json({ message });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Delete Interest By Index
+router.delete('/interests/:index', async (req, res) => {
+    const userId = req.user.id;
+    const { index } = req.params;
+
+    try {
+        const message = await interestController.deleteInterestByIndex(userId, index);
         res.status(200).json({ message });
     } catch (error) {
         console.error(error);
